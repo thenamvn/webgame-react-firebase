@@ -1,0 +1,177 @@
+/* Room.module.css */
+.bg_room {
+  top: 0; /* Place the button at the top of the page */
+  left: 0; /* Place the button at the start of the page */
+  right: 0; /* Stretch the button to the end of the page */
+  bottom: 0; /* Stretch the button to the bottom of the page */
+}
+
+.shareButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  /* Adjusted for better positioning within .adminView */
+  position: relative;
+  margin-right: 10px; /* Adds spacing between buttons */
+}
+
+.adminView {
+  display: flex;
+  /* Ensure proper alignment and spacing */
+  align-items: center;
+  justify-content: start;
+  position: relative; /* Added to position .shareButton relatively within */
+}
+
+
+.roomInfo {
+  z-index: 9999;
+  display: none;
+  max-height: 100vh;
+  border-radius: 10px;
+  border: none;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 1); /* Semi-transparent grey */
+  width: 100%; /* Full width form */
+  max-width: 300px; /* Maximum width for form */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Centering styles */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* New styles for centering content */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.roomTitle {
+  font-size: 24px;
+  color: #333;
+  align-content: center;
+}
+
+.roomLink {
+  color: #666;
+}
+
+.roomLink a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.roomLink a:hover {
+  text-decoration: underline;
+}
+
+.uploadForm {
+  z-index: 1000;
+  max-height: 100vh;
+  border-radius: 10px;
+  border: none;
+  padding: 20px;
+  background-color: rgba(24, 26, 27, 0.7);
+  width: 100%; /* Full width form */
+  max-width: 300px; /* Maximum width for form */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Centering styles */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* New styles for centering content */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.fileInput {
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.descriptionInput {
+  display: inline-block;
+  height: 100px; /* Adjust as needed */
+  vertical-align: middle;
+  position: relative;
+  bottom: 14px;
+  border-radius: 7px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 18px; 
+  margin-top: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.descriptionInput:focus,
+.descriptionInput:hover {
+  outline: none;
+  border-color: rgba(129, 140, 248);
+  background-color: #fff;
+  box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
+}
+
+
+.uploadButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.uploadButton:hover {
+  background-color: #0056b3;
+}
+
+.uploadedContent {
+  margin-top: 20px;
+}
+
+.uploadedContentTitle {
+  font-size: 20px;
+  color: #333;
+}
+
+.uploadedImage {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
+
+.sliderContainer {
+  max-width: 80vw; /* 100% of the viewport's width */
+  max-height: 70vh; /* 100% of the viewport's height */
+}
+.uploadedImage {
+  max-width: 100vw;
+  max-height: 100vh;
+  width: 100%; /* 100% of the slider's width */
+  height: 100%; /* maintain aspect ratio */
+  object-fit: contain; /* cover the entire slider */
+}
