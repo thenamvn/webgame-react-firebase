@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ProfilePicture from './ProfilePicture';
-import handleLogin from '../../utils/login';
-import handleKeyDown from '../../utils/handleKeyDown';
-import styles from '../login/Login.module.css';
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import ProfilePicture from "./ProfilePicture";
+import handleLogin from "../../utils/login";
+import handleKeyDown from "../../utils/handleKeyDown";
+import styles from "../login/Login.module.css";
 
 const LoginForm = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -17,7 +17,7 @@ const LoginForm = () => {
   };
 
   const navigateToSignupForm = () => {
-    navigate('/signup');
+    navigate("/signup");
   };
 
   useEffect(() => {
@@ -49,7 +49,8 @@ const LoginForm = () => {
   return (
     <div className={styles.loginContainer}>
       <form id="login-form" className={styles.loginForm}>
-        <ProfilePicture /><br />
+        <ProfilePicture />
+        <br />
         <div className={styles.inputContainer}>
           <input
             type="text"
@@ -59,18 +60,22 @@ const LoginForm = () => {
             ref={usernameRef}
             autoComplete="username"
           />
-        </div><br />
+        </div>
+        <br />
         <div className={styles.inputContainer}>
           <input
-            type={passwordVisible ? 'text' : 'password'}
+            type={passwordVisible ? "text" : "password"}
             placeholder="Password"
             id="password"
             name="password"
             ref={passwordRef}
             onKeyDown={(e) => handleKeyDown(e, handleLoginClick)}
             autoComplete="current-password"
-          /><br />
-          <a href="#" className={styles.forgotPassword}>Quên mật khẩu?</a>
+          />
+          <br />
+          <a href="#" className={styles.forgotPassword}>
+            Forget Password?
+          </a>
         </div>
         <div className={styles.checkboxWrapper}>
           <label className={styles.checkbox}>
@@ -82,7 +87,7 @@ const LoginForm = () => {
               onChange={handleRememberMeChange}
             />
             <span className={styles.checkboxLabel}></span>
-            Nhớ mật khẩu
+            Remember me
           </label>
         </div>
         <div className={styles.checkboxWrapper}>
@@ -94,15 +99,20 @@ const LoginForm = () => {
               onChange={togglePasswordVisibility}
             />
             <span className={styles.checkboxLabel}></span>
-            Hiện mật khẩu
+            Show password
           </label>
         </div>
         <a className={styles.loginButton} onClick={handleLoginClick}>
-          <span className={styles.loginButtonText} id="login-button">Đăng nhập</span>
+          <span className={styles.loginButtonText} id="login-button">
+            Sign In
+          </span>
         </a>
         <p className={styles.noAccount}>
-          Chưa có tài khoản ?
-          <a onClick={navigateToSignupForm} className={styles.link}> Đăng kí</a>
+          Don’t have an account yet ?
+          <a onClick={navigateToSignupForm} className={styles.link}>
+            {" "}
+            Sign Up
+          </a>
         </p>
       </form>
     </div>

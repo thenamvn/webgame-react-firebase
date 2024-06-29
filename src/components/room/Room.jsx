@@ -106,6 +106,11 @@ const Room = () => {
       });
   }
 
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text);
+    alert("Link copied to clipboard!");
+  }
+  
   function handleSubmit(event) {
     event.preventDefault();
     if (!files.length) {
@@ -141,13 +146,15 @@ const Room = () => {
         });
       });
       // Nếu người dùng là admin, thêm mô tả công việc vào jobs
-      const description = event.target[1].value;
+      const description = event.target.querySelector('textarea').value;
       const job = { job_description: description };
       const jobsRef = collection(db, "rooms", id, "jobs");
       addDoc(jobsRef, job)
         .then((docRef) => {
           console.log("Job description uploaded with ID: ", docRef.id);
           setJobDescriptions((prevJobs) => [...prevJobs, description]);
+          setShowUploadFormAdmin(false);
+          alert("Job Upload successfully!");
         })
         .catch((error) => {
           console.error("Error adding job description: ", error);
@@ -201,208 +208,189 @@ const Room = () => {
 
   return (
     <div className={styles.bg_room}>
-      <div className={styles.gridContainer}>
-        <div className={styles.itemHeader}>
-          <h1 className={styles.roomTitle}>Welcome to room {id}</h1>
-        </div>
-        {isAdmin ? (
-          <>
-            {/* Admin view */}
-            <div className={styles.itemMain}>
-              <div className={styles.adminView}>
-                <button
-                  className={styles.shareButton}
-                  onClick={() => setShowRoomInfo(true)}
-                >
-                  Share
-                </button>
-                <button
-                  className={styles.shareButton}
-                  onClick={() => setShowUploadFormAdmin(true)}
-                >
-                  Submit Job
-                </button>
-              </div>
-              {showRoomInfo && (
-                <div className={styles.roomInfo}>
-                  <button
-                    className={styles.closeButton}
-                    onClick={() => setShowRoomInfo(false)}
-                  >
-                    X
-                  </button>
-                  <br />
-                  <p className={styles.roomLink}>
-                    Room Link:{" "}
-                    <a href={window.location.href}>{window.location.href}</a>
-                    <br />
-                    Scan QR code to join the room
-                  </p>
-                  <br />
-                  <div className={styles.qrCode}>
-                    <QRCode value={window.location.href} />
-                  </div>
-                  <br />
-                </div>
-              )}
-              {showUploadFormAdmin && ( // Use the state variable to conditionally render this form
-                <form className={styles.uploadForm} onSubmit={handleSubmit}>
-                  <h1>Game Upload</h1>
-                  <button // Close button to hide the form
-                    className={styles.closeButton}
-                    onClick={() => setShowUploadFormAdmin(false)}
-                  >
-                    X
-                  </button>
-                  <input
-                    type="file"
-                    onChange={handleChange}
-                    className={styles.fileInput}
-                    multiple
-                  />
-                  <br />
-                  <textarea
-                    placeholder="Description"
-                    className={styles.descriptionInput}
-                  />
-                  <br />
-                  <button type="submit" className={styles.uploadButton}>
-                    Upload
-                  </button>
-                </form>
-              )}
-            </div>
-            <div className={styles.itemListUserSubmit}>
-              <div className={styles.userSubmitList}>
-                <div className={styles.headerList}>
-                  <h2>Submitted Jobs</h2>
-                </div>
-                <div className={styles.list}>
-                  <div className ={styles.leaderboard-item} onclick="showDetails('user1')">
-                    <span class="rank">1</span>
-                    <img
-                      src="path_to_image1.jpg"
-                      alt="Profile Picture"
-                      class="profile-pic"
-                    ></img>
-                    <span class="name">User 1</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className={styles.nonAdminView}>
-            {/* Non-admin view */}
+      <h1 className={styles.roomTitle}>Welcome to room {id}</h1>
+      {isAdmin ? (
+        <>
+          {/* Admin view */}
+          <div className={styles.adminView}>
             <button
               className={styles.shareButton}
-              onClick={() => setShowUploadFormUser(true)}
+              onClick={() => setShowRoomInfo(true)}
+            >
+              Share
+            </button>
+            <button
+              className={styles.shareButton}
+              onClick={() => setShowUploadFormAdmin(true)}
             >
               Submit Job
             </button>
-            {showUploadFormUser && (
-              <form className={styles.uploadForm} onSubmit={handleSubmit}>
-                <h1>Submit Job</h1>
-                <input
-                  type="file"
-                  onChange={handleChange}
-                  className={styles.fileInput}
-                  multiple
-                />
-                <button
-                  className={styles.closeButton}
-                  onClick={() => setShowUploadFormUser(false)}
-                >
-                  X
-                </button>
+          </div>
+          {showRoomInfo && (
+            <div className={styles.roomInfo}>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowRoomInfo(false)}
+              >
+                X
+              </button>
+              <br />
+              <p className={styles.roomLink}>
+                Room Link:{" "}
+                <a href={window.location.href}>{window.location.href}</a>
                 <br />
-                <button type="submit" className={styles.uploadButton}>
-                  Submit
-                </button>
-              </form>
-            )}
-            <div>
-              <h2>Your mission:</h2>
-              {jobDescriptions.map((job, index) => (
+                Scan QR code to join the room
+              </p>
+              <br />
+              <div className={styles.qrCode}>
+                <QRCode value={window.location.href} />
+              </div>
+              <button
+                className={styles.copyButton}
+                onClick={() => copyToClipboard(window.location.href)}
+              >
+                Copy Link
+              </button>
+            </div>
+          )}
+          {showUploadFormAdmin && ( // Use the state variable to conditionally render this form
+            <form className={styles.uploadForm} onSubmit={handleSubmit}>
+              <h1>Misson Upload</h1>
+              <button // Close button to hide the form
+                className={styles.closeButton}
+                onClick={() => setShowUploadFormAdmin(false)}
+              >
+                X
+              </button>
+              <input
+                type="file"
+                onChange={handleChange}
+                className={styles.fileInput}
+                multiple
+              />
+              <br />
+              <textarea
+                placeholder="Description"
+                className={styles.descriptionInput}
+              />
+              <br />
+              <button type="submit" className={styles.uploadButton}>
+                Upload
+              </button>
+            </form>
+          )}
+        </>
+      ) : (
+        <div className={styles.nonAdminView}>
+          {/* Non-admin view */}
+          <button
+            className={styles.shareButton}
+            onClick={() => setShowUploadFormUser(true)}
+          >
+            Submit Misson
+          </button>
+          {showUploadFormUser && (
+            <form className={styles.uploadForm} onSubmit={handleSubmit}>
+              <h1>Submit Job</h1>
+              <input
+                type="file"
+                onChange={handleChange}
+                className={styles.fileInput}
+                multiple
+              />
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowUploadFormUser(false)}
+              >
+                X
+              </button>
+              <br />
+              <button type="submit" className={styles.uploadButton}>
+                Submit
+              </button>
+            </form>
+          )}
+          <div>
+            <h2>Your mission:</h2>
+            {jobDescriptions.map((job, index) => (
+              <div key={index}>
+                <p>{job}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {uploadedFileURLs.length > 0 && (
+        <div className={styles.sliderContainer}>
+          {/* Slider for uploaded files */}
+          {isAdmin && (
+            <button
+              className={styles.uploadButton}
+              onClick={() => setIsSliderVisible(!isSliderVisible)}
+            >
+              {isSliderVisible ? "Hide" : "Show"} Slider
+            </button>
+          )}
+          {(isAdmin ? isSliderVisible : true) && (
+            <Slider
+              {...{
+                dots: true,
+                infinite: uploadedFileURLs.length > 1,
+                speed: 500,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                responsive: [
+                  {
+                    breakpoint: 1024,
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: true,
+                      dots: true,
+                    },
+                  },
+                  {
+                    breakpoint: 600,
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      initialSlide: 1,
+                    },
+                  },
+                  {
+                    breakpoint: 480,
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                    },
+                  },
+                ],
+              }}
+            >
+              {uploadedFileURLs.map((url, index) => (
                 <div key={index}>
-                  <p>{job}</p>
+                  <img
+                    src={url}
+                    alt={`Uploaded content ${index + 1}`}
+                    className={styles.uploadedImage}
+                  />
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-        {uploadedFileURLs.length > 0 && (
-          <div className={styles.sliderContainer}>
-            {/* Slider for uploaded files */}
-            {isAdmin && (
-              <button
-                className={styles.uploadButton}
-                onClick={() => setIsSliderVisible(!isSliderVisible)}
-              >
-                {isSliderVisible ? "Hide" : "Show"} Slider
-              </button>
-            )}
-            {(isAdmin ? isSliderVisible : true) && (
-              <Slider
-                {...{
-                  dots: true,
-                  infinite: uploadedFileURLs.length > 1,
-                  speed: 500,
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  responsive: [
-                    {
-                      breakpoint: 1024,
-                      settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1,
-                        infinite: true,
-                        dots: true,
-                      },
-                    },
-                    {
-                      breakpoint: 600,
-                      settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1,
-                        initialSlide: 1,
-                      },
-                    },
-                    {
-                      breakpoint: 480,
-                      settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1,
-                      },
-                    },
-                  ],
-                }}
-              >
-                {uploadedFileURLs.map((url, index) => (
-                  <div key={index}>
-                    <img
-                      src={url}
-                      alt={`Uploaded content ${index + 1}`}
-                      className={styles.uploadedImage}
-                    />
-                  </div>
-                ))}
-              </Slider>
-            )}
-          </div>
-        )}
+            </Slider>
+          )}
+        </div>
+      )}
 
-        {/* Message for non-admins when no content is available */}
-        {!isAdmin && uploadedFileURLs.length === 0 && (
-          <div className={styles.noContentMessage}>
-            <p>No content has been shared in this room yet.</p>
-            <p>
-              Please check back later or ask the room admin to upload some
-              content.
-            </p>
-          </div>
-        )}
-      </div>
+      {/* Message for non-admins when no content is available */}
+      {!isAdmin && uploadedFileURLs.length === 0 && (
+        <div className={styles.noContentMessage}>
+          <p>No content has been shared in this room yet.</p>
+          <p>
+            Please check back later or ask the room admin to upload some
+            content.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

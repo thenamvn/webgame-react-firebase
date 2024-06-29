@@ -8,15 +8,20 @@
 
 .itemHeader { grid-area: header; }
 .itemMain { grid-area: main; }
-.itemListUserSubmit { grid-area: list; }
+
+.itemListUserSubmit { 
+  grid-area: list;
+  border: 1px solid #ccc;
+  height: 100%;
+}
 
 .gridContainer {
   display: grid;
   grid-template-areas:
     'header header header header header header'
-    'main main main main list list';
+    'main main main main main list';
   gap: 10px;
-  background-color: #2196F3;
+  /* background-color: #2196F3; */
   padding: 10px;
 }
 
@@ -27,7 +32,47 @@
   font-size: 30px;
 }
 
+.leaderboardItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 2px solid #ccc; /* Bo viền dưới */
+  transition: transform 0.2s ease-in-out; /* Hiệu ứng transition */
+  background-color: #f9f9f9; /* Màu nền */
+  border-radius: 10px;
+}
+
+.leaderboardItem:hover {
+  transform: scale(1.1); /* Phóng to khi hover */
+  background-color: #e0e0e0; /* Màu nền khi hover */
+}
+
+/* Hình ảnh người dùng */
+.leaderboardItem img {
+  width: 40px; /* Kích thước ảnh */
+  height: 40px;
+  border-radius: 50%; /* Để ảnh tròn */
+  margin-right: 10px; /* Khoảng cách giữa ảnh và tên */
+}
+
+/* Tên người dùng */
+.leaderboardItem .name {
+  flex: 1; /* Để tên căn chỉnh đúng vị trí */
+}
+
 .shareButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  /* Adjusted for better positioning within .adminView */
+  position: relative;
+  margin-right: 10px; /* Adds spacing between buttons */
+}
+
+.copyButton {
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -50,21 +95,24 @@
 
 .roomInfo {
   z-index: 9999;
-  display: none;
-  max-height: 100vh;
+  /* display: none; */ /* Xóa dòng này nếu bạn muốn điều khiển hiển thị thông qua JSX */
+  max-height: 75vh;
   border-radius: 10px;
   border: none;
   padding: 20px;
-  background-color: rgba(255, 255, 255, 1); /* Semi-transparent grey */
-  width: 100%; /* Full width form */
-  max-width: 300px; /* Maximum width for form */
+  background-color: rgba(255, 255, 255, 1); /* Màu nền trắng */
+  width: 100%; /* Chiều rộng đầy đủ */
+  width: 75vw; /* Chiều rộng tối đa */
+  max-width: 300px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* Centering styles */
+  
+  /* Căn giữa */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* New styles for centering content */
+  
+  /* Định dạng nội dung */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -90,6 +138,8 @@
 
 .roomLink {
   color: #666;
+  width: 100%;
+  word-wrap: break-word;
 }
 
 .roomLink a {
