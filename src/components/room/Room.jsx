@@ -110,7 +110,7 @@ const Room = () => {
     navigator.clipboard.writeText(text);
     alert("Link copied to clipboard!");
   }
-  
+
   function handleSubmit(event) {
     event.preventDefault();
     if (!files.length) {
@@ -146,7 +146,7 @@ const Room = () => {
         });
       });
       // Nếu người dùng là admin, thêm mô tả công việc vào jobs
-      const description = event.target.querySelector('textarea').value;
+      const description = event.target.querySelector("textarea").value;
       const job = { job_description: description };
       const jobsRef = collection(db, "rooms", id, "jobs");
       addDoc(jobsRef, job)
@@ -322,6 +322,8 @@ const Room = () => {
       )}
       {uploadedFileURLs.length > 0 && (
         <div className={styles.sliderContainer}>
+          <div></div>
+          <br />
           {/* Slider for uploaded files */}
           {isAdmin && (
             <button
@@ -333,52 +335,97 @@ const Room = () => {
           )}
           {(isAdmin ? isSliderVisible : true) && (
             <Slider
-            {...{
-              dots: true,
-              infinite: uploadedFileURLs.length > 1, // Điều này đảm bảo rằng infinite chỉ được kích hoạt khi có nhiều hơn một ảnh
-              speed: 500,
-              slidesToShow: 1,
-              slidesToScroll: 1,
-              responsive: [
-                {
-                  breakpoint: 1024,
-                  settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    infinite: uploadedFileURLs.length > 1, // Áp dụng cùng một logic cho cấu hình responsive
-                    dots: true,
+              {...{
+                dots: true,
+                infinite: uploadedFileURLs.length > 1,
+                speed: 500,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                responsive: [
+                  {
+                    breakpoint: 1920, // Màn hình rất lớn, không cần tải ảnh lớn hơn 1080p
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
                   },
-                },
-                {
-                  breakpoint: 600,
-                  settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    initialSlide: 1,
-                    infinite: uploadedFileURLs.length > 1, // Áp dụng cùng một logic cho cấu hình responsive
+                  {
+                    breakpoint: 1440, // Màn hình lớn
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
                   },
-                },
-                {
-                  breakpoint: 480,
-                  settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    infinite: uploadedFileURLs.length > 1, // Áp dụng cùng một logic cho cấu hình responsive
+                  {
+                    breakpoint: 1280, // Màn hình máy tính trung bình
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
                   },
-                },
-              ],
-            }}
-          >
-            {uploadedFileURLs.map((url, index) => (
-              <div key={index}>
-                <img
-                  src={url}
-                  alt={`Uploaded content ${index + 1}`}
-                  className={styles.uploadedImage}
-                />
-              </div>
-            ))}
-          </Slider>
+                  {
+                    breakpoint: 1024, // Máy tính bảng lớn và màn hình máy tính nhỏ
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
+                  },
+                  {
+                    breakpoint: 768, // Máy tính bảng
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
+                  },
+                  {
+                    breakpoint: 600, // Máy tính bảng nhỏ
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      initialSlide: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
+                  },
+                  {
+                    breakpoint: 480, // Điện thoại di động lớn
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
+                  },
+                  {
+                    breakpoint: 320, // Điện thoại di động
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: uploadedFileURLs.length > 1,
+                    },
+                  },
+                ],
+              }}
+            >
+              {uploadedFileURLs.map((url, index) => (
+                <div key={index}>
+                  <img
+                    src={url}
+                    alt={`Uploaded content ${index + 1}`}
+                    className={styles.uploadedImage}
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxWidth: "1920px", // Giữ nguyên giới hạn này vì ảnh có chất lượng tối đa là 1080p
+                      maxHeight: "1080px",
+                    }}
+                  />
+                </div>
+              ))}
+            </Slider>
           )}
         </div>
       )}
