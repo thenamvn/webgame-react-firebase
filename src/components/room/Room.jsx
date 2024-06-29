@@ -25,7 +25,7 @@ const Room = () => {
   const [isSliderVisible, setIsSliderVisible] = useState(true);
   const [showRoomInfo, setShowRoomInfo] = useState(false);
   const [showUploadFormUser, setShowUploadFormUser] = useState(false);
-  const [showUploadFormAdmin, setShowUploadAdminUser] = useState(false);
+  const [showUploadFormAdmin, setShowUploadFormAdmin] = useState(false);
   const [roomDetails, setRoomDetails] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
@@ -214,7 +214,7 @@ const Room = () => {
           </button>
           <button
             className={styles.shareButton}
-            onClick={() => setShowUploadAdminUser(true)}
+            onClick={() => setShowUploadFormAdmin(true)}
           >
             Submit Job
           </button>
@@ -244,6 +244,12 @@ const Room = () => {
           {showUploadFormAdmin && ( // Use the state variable to conditionally render this form
             <form className={styles.uploadForm} onSubmit={handleSubmit}>
               <h1>Game Upload</h1>
+              <button // Close button to hide the form
+                className={styles.closeButton}
+                onClick={() => setShowUploadFormAdmin(false)}
+              >
+                X
+              </button>
               <input
                 type="file"
                 onChange={handleChange}
