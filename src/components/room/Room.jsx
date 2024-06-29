@@ -333,50 +333,52 @@ const Room = () => {
           )}
           {(isAdmin ? isSliderVisible : true) && (
             <Slider
-              {...{
-                dots: true,
-                infinite: uploadedFileURLs.length > 1,
-                speed: 500,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                responsive: [
-                  {
-                    breakpoint: 1024,
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: true,
-                      dots: true,
-                    },
+            {...{
+              dots: true,
+              infinite: uploadedFileURLs.length > 1, // Điều này đảm bảo rằng infinite chỉ được kích hoạt khi có nhiều hơn một ảnh
+              speed: 500,
+              slidesToShow: 1,
+              slidesToScroll: 1,
+              responsive: [
+                {
+                  breakpoint: 1024,
+                  settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    infinite: uploadedFileURLs.length > 1, // Áp dụng cùng một logic cho cấu hình responsive
+                    dots: true,
                   },
-                  {
-                    breakpoint: 600,
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      initialSlide: 1,
-                    },
+                },
+                {
+                  breakpoint: 600,
+                  settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    initialSlide: 1,
+                    infinite: uploadedFileURLs.length > 1, // Áp dụng cùng một logic cho cấu hình responsive
                   },
-                  {
-                    breakpoint: 480,
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                    },
+                },
+                {
+                  breakpoint: 480,
+                  settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    infinite: uploadedFileURLs.length > 1, // Áp dụng cùng một logic cho cấu hình responsive
                   },
-                ],
-              }}
-            >
-              {uploadedFileURLs.map((url, index) => (
-                <div key={index}>
-                  <img
-                    src={url}
-                    alt={`Uploaded content ${index + 1}`}
-                    className={styles.uploadedImage}
-                  />
-                </div>
-              ))}
-            </Slider>
+                },
+              ],
+            }}
+          >
+            {uploadedFileURLs.map((url, index) => (
+              <div key={index}>
+                <img
+                  src={url}
+                  alt={`Uploaded content ${index + 1}`}
+                  className={styles.uploadedImage}
+                />
+              </div>
+            ))}
+          </Slider>
           )}
         </div>
       )}

@@ -10,7 +10,6 @@ import Room from './components/room/Room';
 const App = () => {
   return (
     <Router>
-      <div className="login-screen">
         <Routes>
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<SignupForm />} />
@@ -18,7 +17,6 @@ const App = () => {
           <Route path="/room/:id" element={<PrivateRoute component={Room} />} />
           <Route path="/" element={<LoginForm />} /> {/* Redirect to login by default */}
         </Routes>
-      </div>
     </Router>
   );
 };
