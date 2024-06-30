@@ -25,8 +25,14 @@ const handleLogin = async (event, navigate) => {
       localStorage.removeItem("password");
     }
 
-    // Navigate to the dashboard
-    navigate('/dashboard');
+    // Lấy URL gốc từ localStorage
+    const redirectPath = localStorage.getItem('redirectPath') || '/dashboard';
+
+    // Xóa URL gốc khỏi localStorage
+    localStorage.removeItem('redirectPath');
+
+    // Navigate to the original URL
+    navigate(redirectPath);
   } catch (error) {
     console.error("Error during login:", error);
     alert("Invalid username or password. Please try again.");
