@@ -17,6 +17,7 @@ import {
   query,
   addDoc,
 } from "firebase/firestore";
+import { useCopyToClipboard } from "../../utils/copy2clipboard"; // Import the custom hook
 
 const Room = () => {
   const { id } = useParams();
@@ -30,6 +31,7 @@ const Room = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
   const [jobDescriptions, setJobDescriptions] = useState([]);
+  const { copyToClipboard, showTooltip } = useCopyToClipboard();
 
   useEffect(() => {
     // Fetch room details from Firestore using the new API
@@ -104,11 +106,6 @@ const Room = () => {
       .catch((err) => {
         console.error("Error in image processing:", err);
       });
-  }
-
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text);
-    alert("Link copied to clipboard!");
   }
 
   function handleSubmit(event) {
@@ -251,6 +248,7 @@ const Room = () => {
               >
                 Copy Link
               </button>
+              {showTooltip && <span className={styles.tooltip}>Copied to Clipboard!</span>}
             </div>
           )}
           {showUploadFormAdmin && ( // Use the state variable to conditionally render this form
