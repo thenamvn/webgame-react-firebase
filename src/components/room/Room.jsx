@@ -16,7 +16,10 @@ import {
   getDoc,
   query,
   addDoc,
+  where,
+  onSnapshot,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const Room = () => {
   const { id } = useParams();
@@ -30,6 +33,10 @@ const Room = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
   const [jobDescriptions, setJobDescriptions] = useState([]);
+  const [submittedUsers, setSubmittedUsers] = useState([]);
+  const [selectedUserImages, setSelectedUserImages] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showSubmitedForm, setShowSubmitedForm] = useState(false);
 
   useEffect(() => {
     // Fetch room details from Firestore using the new API
@@ -50,6 +57,20 @@ const Room = () => {
         setError(error.message);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      const listUser = collection(db, "rooms", id, "SubmitedUser");
+      const unsubscribe = onSnapshot(listUser, (querySnapshot) => {
+        const users = querySnapshot.docs.map(doc => doc.data());
+        setSubmittedUsers(users);
+      });
+    
+      // Cleanup function để hủy đăng ký lắng nghe khi component bị unmount
+      return () => unsubscribe();
+    }
+  }, [id,isAdmin]);
+
 
   useEffect(() => {
     if (!isAdmin) {
@@ -111,6 +132,92 @@ const Room = () => {
     alert("Link copied to clipboard!");
   }
 
+  const sliderSettings = {
+    dots: true,
+    infinite: uploadedFileURLs.length > 1,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1920, // Màn hình rất lớn, không cần tải ảnh lớn hơn 1080p
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 1440, // Màn hình lớn
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 1280, // Màn hình máy tính trung bình
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 1024, // Máy tính bảng lớn và màn hình máy tính nhỏ
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 768, // Máy tính bảng
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 600, // Máy tính bảng nhỏ
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          initialSlide: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 480, // Điện thoại di động lớn
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 320, // Điện thoại di động
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+    ],
+  };
+
+
+  const handleUserClick = async (userId) => {
+    const imagesCollectionRef = collection(db, "rooms", id, "UsersUpload");
+    const q = query(imagesCollectionRef, where("id", "==", userId));
+    const querySnapshot = await getDocs(q);
+    const images = querySnapshot.docs.map(doc => doc.data().url);
+    setSelectedUserImages(images);
+    setSelectedUser(userId);
+    setShowSubmitedForm(true);
+  };
+
   function handleSubmit(event) {
     event.preventDefault();
     if (!files.length) {
@@ -161,6 +268,37 @@ const Room = () => {
         });
     } else {
       // Xử lý tải ảnh cho user
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const displayName = user.displayName;
+      const listUser = collection(db, "rooms", id, "SubmitedUser");
+      const queryRef = query(
+        listUser,
+        where("id", "==", uploaderUsername),
+      );
+
+      getDocs(queryRef).then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          // Tài liệu không tồn tại, tiến hành thêm mới
+          addDoc(listUser, {
+            id: uploaderUsername,
+            name: displayName,
+            // Thêm các trường khác ở đây
+          })
+            .then(() => {
+              console.log("New submited user added");
+            })
+            .catch((error) => {
+              console.error("Error adding submited user: ", error);
+            });
+        } else {
+          console.log(
+            "Submited user with the same id and name already exists."
+          );
+          // Xử lý trường hợp trùng lặp ở đây
+        }
+      });
+
       files.forEach((file) => {
         const imageRef = ref(storage, `images/${id}/${file.name}`);
         uploadBytes(imageRef, file.blob).then((snapshot) => {
@@ -168,16 +306,11 @@ const Room = () => {
           getDownloadURL(snapshot.ref).then((downloadURL) => {
             setUploadedFileURLs((prevUrls) => [...prevUrls, downloadURL]);
 
-            const userDocRef = doc(
-              db,
-              "rooms",
-              id,
-              "User_Images",
-              uploaderUsername
-            );
-            const imagesCollectionRef = collection(userDocRef, "images");
+            const imagesCollectionRef = collection(db,"rooms",id, "UsersUpload");
             const imageDoc = {
               url: downloadURL,
+              id: uploaderUsername,
+              displayName: displayName,
               // Add other image metadata here as needed
             };
 
@@ -279,6 +412,47 @@ const Room = () => {
               </button>
             </form>
           )}
+          {/* Leaderboard */}
+          <div className={styles.leaderboard}>
+            <h2>Submited Users</h2>
+            <ul>
+              {submittedUsers.map((user, index) => (
+                <li key={index} onClick={() => handleUserClick(user.id)}>
+                  {user.name} ({user.id})
+                </li>
+              ))}
+            </ul>
+          </div>
+          {showSubmitedForm && (
+        <div className={styles.uploadedImagesForm}>
+          <button
+            className={styles.closeButton}
+            onClick={() => setShowSubmitedForm(false)}
+          >
+            X
+          </button>
+          <h2>Images uploaded by {selectedUser}</h2>
+          <Slider {...sliderSettings}>
+            {selectedUserImages.map((imageUrl, index) => (
+              <div key={index} className={styles.imageContainer}>
+                <img src={imageUrl} alt={`Uploaded by ${selectedUser}`} />
+                <button
+                  className={styles.acceptButton}
+                  // onClick={() => handleAccept(imageUrl)}
+                >
+                  Accept
+                </button>
+                <button
+                  className={styles.denyButton}
+                  // onClick={() => handleDeny(imageUrl)}
+                >
+                  Deny
+                </button>
+              </div>
+            ))}
+          </Slider>
+        </div>
+      )}
         </>
       ) : (
         <div className={styles.nonAdminView}>
@@ -334,81 +508,7 @@ const Room = () => {
             </button>
           )}
           {(isAdmin ? isSliderVisible : true) && (
-            <Slider
-              {...{
-                dots: true,
-                infinite: uploadedFileURLs.length > 1,
-                speed: 500,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                responsive: [
-                  {
-                    breakpoint: 1920, // Màn hình rất lớn, không cần tải ảnh lớn hơn 1080p
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                  {
-                    breakpoint: 1440, // Màn hình lớn
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                  {
-                    breakpoint: 1280, // Màn hình máy tính trung bình
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                  {
-                    breakpoint: 1024, // Máy tính bảng lớn và màn hình máy tính nhỏ
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                  {
-                    breakpoint: 768, // Máy tính bảng
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                  {
-                    breakpoint: 600, // Máy tính bảng nhỏ
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      initialSlide: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                  {
-                    breakpoint: 480, // Điện thoại di động lớn
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                  {
-                    breakpoint: 320, // Điện thoại di động
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      infinite: uploadedFileURLs.length > 1,
-                    },
-                  },
-                ],
-              }}
+            <Slider {...sliderSettings}
             >
               {uploadedFileURLs.map((url, index) => (
                 <div key={index}>
