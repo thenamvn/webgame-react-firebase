@@ -44,7 +44,7 @@ export const createGame = async (setRoomId, navigate) => {
     navigate(`/room/${roomRef.id}`); // Điều hướng đến trang phòng game với ID mới
   } catch (error) {
     console.error("Error creating room: ", error);
-    // Xử lý lỗi tại đây (ví dụ: hiển thị thông báo lỗi cho người dùng)
+    alert("Error creating room: " + error.message);
   }
 };
 
@@ -60,6 +60,6 @@ export const joinGame = async (roomCode, navigate) => {
     navigate(`/room/${roomDoc.id}`); // Điều hướng đến trang phòng game với ID đã tồn tại
   } catch (error) {
     console.error("Error joining room: ", error);
-    // Xử lý lỗi tại đây (ví dụ: hiển thị thông báo lỗi cho người dùng)
+    alert("Error joining room: " + error.message);
   }
 };
