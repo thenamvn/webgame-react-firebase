@@ -20,6 +20,8 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
+import { getAuth } from "firebase/auth";
+
 const Room = () => {
   const { id } = useParams();
   const [files, setFiles] = useState([]);
@@ -31,7 +33,12 @@ const Room = () => {
   const [roomDetails, setRoomDetails] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
   const [jobDescriptions, setJobDescriptions] = useState([]);
+  const [submittedUsers, setSubmittedUsers] = useState([]);
+  const [selectedUserImages, setSelectedUserImages] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showSubmitedForm, setShowSubmitedForm] = useState(false);
 
   useEffect(() => {
     // Fetch room details from Firestore using the new API
@@ -124,8 +131,94 @@ const Room = () => {
 
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text);
-    alert("Link copied to clipboard!");
+    setShowTooltip(true);
   }
+
+  const sliderSettings = {
+    dots: true,
+    infinite: uploadedFileURLs.length > 1,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1920, // Màn hình rất lớn, không cần tải ảnh lớn hơn 1080p
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 1440, // Màn hình lớn
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 1280, // Màn hình máy tính trung bình
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 1024, // Máy tính bảng lớn và màn hình máy tính nhỏ
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 768, // Máy tính bảng
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 600, // Máy tính bảng nhỏ
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          initialSlide: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 480, // Điện thoại di động lớn
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+      {
+        breakpoint: 320, // Điện thoại di động
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: uploadedFileURLs.length > 1,
+        },
+      },
+    ],
+  };
+
+
+  const handleUserClick = async (userId) => {
+    const imagesCollectionRef = collection(db, "rooms", id, "UsersUpload");
+    const q = query(imagesCollectionRef, where("id", "==", userId));
+    const querySnapshot = await getDocs(q);
+    const images = querySnapshot.docs.map(doc => doc.data().url);
+    setSelectedUserImages(images);
+    setSelectedUser(userId);
+    setShowSubmitedForm(true);
+  };
 
   function handleSubmit(event) {
     event.preventDefault();
